@@ -10,8 +10,8 @@ header{padding:20px 7%;background:#123b2a;color:#fff;display:flex;justify-conten
 .header-der{display:flex;align-items:center;gap:18px;font-size:15px}
 .header-der a{color:#fff;text-decoration:none;font-weight:bold}
 .header-der a:hover{text-decoration:underline}
-.btn-salir{background:transparent;color:#fff;border:1px solid #ffffff80;border-radius:8px;padding:8px 14px;font-size:14px;cursor:pointer;font-family:inherit}
-.btn-salir:hover{background:#ffffff20}
+.btn-salir, .btn-admin-header{background:transparent;color:#fff;border:1px solid #ffffff80;border-radius:8px;padding:8px 14px;font-size:14px;cursor:pointer;font-family:inherit}
+.btn-salir:hover, .btn-admin-header:hover{background:#ffffff20}
 .portada-sitio{background:#123b2a;padding:0 7% 24px}
 .portada-sitio img{display:block;width:100%;max-width:1200px;margin:auto;border-radius:14px}
 .hero{padding:70px 7%;background:#1d6547;color:#fff}
@@ -54,6 +54,7 @@ footer{padding:25px;text-align:center;background:#123b2a;color:#fff}
 .modal-overlay{display:none;position:fixed;inset:0;background:#00000080;align-items:center;justify-content:center;padding:20px;z-index:999}
 .modal-overlay.abierto{display:flex}
 .modal{background:#fff;border-radius:16px;max-width:520px;width:100%;max-height:85vh;overflow-y:auto;padding:26px}
+.modal.modal-grande{max-width:850px}
 .modal h3{margin-top:0;color:#123b2a}
 .modal-cerrar{float:right;background:none;border:none;font-size:22px;cursor:pointer;color:#4d5666}
 .modal-preview{max-width:100%;border-radius:10px;margin:12px 0;display:block}
@@ -118,27 +119,25 @@ footer{padding:25px;text-align:center;background:#123b2a;color:#fff}
 .enlace-cambio button:hover{text-decoration:underline}
 
 /* Estilos de la sección Planilla */
-.contenedor-iframe{
-  width:100%;
-  background:#fff;
-  border-radius:16px;
-  box-shadow:0 4px 16px #0001;
-  overflow:hidden;
-  margin-top:20px;
-}
-.contenedor-iframe iframe{
-  width:100%;
-  height:580px;
-  border:none;
-  display:block;
-}
+.contenedor-iframe{width:100%;background:#fff;border-radius:16px;box-shadow:0 4px 16px #0001;overflow:hidden;margin-top:20px}
+.contenedor-iframe iframe{width:100%;height:580px;border:none;display:block}
+.sin-hoja{padding:40px;text-align:center;color:#4d5666;font-size:16px}
+
+/* Tabla de datos del Admin */
+.tabla-admin-wrap{max-height:300px;overflow-y:auto;overflow-x:auto;margin-top:15px;border:1px solid #d7dde3;border-radius:8px}
+.tabla-admin{width:100%;border-collapse:collapse;font-size:13px;text-align:left}
+.tabla-admin th,.tabla-admin td{padding:10px;border-bottom:1px solid #e4e8ec;white-space:nowrap}
+.tabla-admin th{background:#f4f6f8;color:#123b2a;position:sticky;top:0}
+.btn-secundario{background:#e4f2ea;color:#123b2a;border:1px solid #1d6547;padding:10px 16px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;margin-right:8px}
+.btn-secundario:hover{background:#d0eadc}
 
 @media (max-width:600px){
   .puerta-caja{padding:24px 20px 28px}
   .hero h1{font-size:34px}
-  .contenedor-iframe iframe{height:420px}
+  .contenedor-iframe iframe{height:400px}
 }
-</style></head>
+</style>
+</head>
 <body>
 
 <!-- ================= PUERTA: PORTADA + LOGIN / REGISTRO ================= -->
@@ -288,6 +287,7 @@ footer{padding:25px;text-align:center;background:#123b2a;color:#fff}
   <div class="header-der">
     <a href="#materias">Materias</a>
     <a href="#planilla">Planilla Sheet</a>
+    <button type="button" class="btn-admin-header" onclick="abrirAdminModal()">⚙️ Admin Sheet</button>
     <span id="saludoUsuario"></span>
     <button type="button" class="btn-salir" onclick="cerrarSesion()">Cerrar sesión</button>
   </div>
@@ -339,14 +339,14 @@ footer{padding:25px;text-align:center;background:#123b2a;color:#fff}
 
 <!-- ================= SECCIÓN GOOGLE SHEET ================= -->
 <section id="planilla">
-  <h2>Control y Recursos en Google Sheets</h2>
-  <p class="text">Accede a la base de datos de control, listas de registros y planillas académicas integradas:</p>
+  <h2>Planilla de Control y Registros</h2>
+  <p class="text">Visualización directa de tu Google Sheet integrada:</p>
   <div class="contenedor-iframe">
-    <iframe 
-      id="iframeGoogleSheet"
-      src="TU_ENLACE_DE_PUBLICAR_EN_LA_WEB_AQUI"
-      allowfullscreen>
-    </iframe>
+    <iframe id="iframeGoogleSheet" style="display:none;" allowfullscreen></iframe>
+    <div id="mensajeSinHoja" class="sin-hoja">
+      <p>⚠️ Aún no has configurado el enlace de tu Google Sheet.</p>
+      <button type="button" class="btn-enviar" onclick="abrirAdminModal()">Abrir Panel Admin y Configurar</button>
+    </div>
   </div>
 </section>
 
@@ -360,8 +360,12 @@ footer{padding:25px;text-align:center;background:#123b2a;color:#fff}
   <p class="text">Determinar la necesidad y viabilidad de una plataforma digital orientada a centralizar y organizar material de estudio para los estudiantes de Economía de la UAGRM.</p>
 </section>
 
-<footer>EcoPass · Proyecto de Investigación ECO480-E · UAGRM</footer>
+<footer>
+  EcoPass · Proyecto de Investigación ECO480-E · UAGRM 
+  <span style="opacity:0.4; margin-left: 15px; cursor: pointer;" onclick="abrirAdminModal()">[Acceso Sheet]</span>
+</footer>
 
+<!-- MODAL IA -->
 <div class="modal-overlay" id="modalIA">
   <div class="modal">
     <button class="modal-cerrar" onclick="cerrarModal()">✕</button>
@@ -375,6 +379,7 @@ footer{padding:25px;text-align:center;background:#123b2a;color:#fff}
   </div>
 </div>
 
+<!-- MODAL MATERIA -->
 <div class="modal-overlay" id="modalMateria">
   <div class="modal">
     <button class="modal-cerrar" onclick="cerrarModalMateria()">✕</button>
@@ -384,18 +389,206 @@ footer{padding:25px;text-align:center;background:#123b2a;color:#fff}
   </div>
 </div>
 
+<!-- ================= MODAL ADMIN GOOGLE SHEET ================= -->
+<div class="modal-overlay" id="modalAdmin">
+  <div class="modal modal-grande">
+    <button class="modal-cerrar" onclick="cerrarAdminModal()">✕</button>
+    
+    <!-- PASO 1: PEDIR CLAVE -->
+    <div id="adminPasoLogin">
+      <h3>🔒 Acceso Administrador</h3>
+      <p class="text">Ingresa tu contraseña para configurar tu Google Sheet y ver los registros.</p>
+      <div class="campo">
+        <label for="adminPasswordInput">Contraseña de Administrador:</label>
+        <input type="password" id="adminPasswordInput" placeholder="Introduce tu clave">
+      </div>
+      <button type="button" class="btn-enviar" onclick="verificarClaveAdmin()">Ingresar</button>
+      <div class="aviso" id="avisoAdminLogin"></div>
+    </div>
+
+    <!-- PASO 2: PANEL DE CONTROL -->
+    <div id="adminPasoPanel" style="display:none;">
+      <h3>📊 Panel de Control: Google Sheets & Datos</h3>
+      <p class="text">Gestiona el enlace de tu hoja y revisa los datos capturados en el formulario.</p>
+
+      <div class="campo">
+        <label for="inputSheetEmbedUrl">1. Enlace de tu Google Sheet (para mostrar en la web):</label>
+        <input type="text" id="inputSheetEmbedUrl" placeholder="Pega el enlace de 'Publicar en la web' o enlace compartido de Google Sheets">
+        <span class="ayuda">Ejemplo: https://docs.google.com/spreadsheets/d/e/.../pubhtml?widget=true</span>
+      </div>
+
+      <div class="campo">
+        <label for="inputSheetApiUrl">2. URL Web App de Apps Script (Opcional, para envío automático):</label>
+        <input type="text" id="inputSheetApiUrl" placeholder="https://script.google.com/macros/s/.../exec">
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <button type="button" class="btn-enviar" onclick="guardarConfiguracionSheet()">Guardar Configuración</button>
+      </div>
+
+      <hr style="border:0;border-top:1px solid #e4e8ec;margin:25px 0;">
+
+      <h4>📋 Datos registrados del Formulario (<span id="totalRegistrosContador">0</span>)</h4>
+      <p class="ayuda">Aquí se almacenan los envíos que hacen los usuarios. Puedes copiarlos con un clic para pegarlos en tu Excel o Google Sheet:</p>
+      
+      <div style="margin-top:10px;">
+        <button type="button" class="btn-secundario" onclick="copiarDatosParaSheet()">📋 Copiar todos los datos (para pegar en Sheet)</button>
+        <button type="button" class="btn-secundario" style="background:#fee2e2;border-color:#b91c1c;color:#b91c1c;" onclick="borrarDatosRegistrados()">🗑️ Limpiar registros</button>
+      </div>
+
+      <div class="tabla-admin-wrap">
+        <table class="tabla-admin" id="tablaRegistrosAdmin">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Nombre</th>
+              <th>Correo</th>
+              <th>Teléfono</th>
+              <th>F. Nacimiento</th>
+              <th>Dirección</th>
+              <th>Ciudad</th>
+              <th>Intereses</th>
+              <th>Contacto</th>
+              <th>Comentario</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyRegistrosAdmin">
+            <!-- Se llena con JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 </div><!-- fin #sitio -->
 
 <script>
-/* ============ CONFIGURACIÓN GOOGLE SHEETS ============ */
-// Pega aquí la URL Web App generada desde Extensiones > Apps Script en tu Sheet
-const GOOGLE_SHEET_URL = 'TU_URL_DE_GOOGLE_APPS_SCRIPT_AQUI';
+/* ============ CLAVE MAESTRA Y ALMACENAMIENTO ============ */
+const CLAVE_ADMIN_CORRECTA = 'Jesus2026';
+const KEY_SHEET_EMBED = 'ecopass_sheet_embed_url';
+const KEY_SHEET_API = 'ecopass_sheet_api_url';
+const KEY_REGISTROS_DATA = 'ecopass_registros_guardados';
+const CLAVE_USUARIOS = 'ecopass_usuarios';
+const CLAVE_SESION = 'ecopass_sesion';
 
-/* ============ Imagen de portada ============ */
-const PORTADA_SRC = ''; // Puedes pegar aquí tu base64 si lo requieres
-if (PORTADA_SRC) {
-  document.getElementById('imgPortadaPuerta').src = PORTADA_SRC;
-  document.getElementById('imgPortadaSitio').src = PORTADA_SRC;
+/* ============ GESTIÓN DE CONFIGURACIÓN ADMIN ============ */
+function abrirAdminModal(){
+  document.getElementById('modalAdmin').classList.add('abierto');
+  document.getElementById('adminPasoLogin').style.display = 'block';
+  document.getElementById('adminPasoPanel').style.display = 'none';
+  document.getElementById('adminPasswordInput').value = '';
+  document.getElementById('avisoAdminLogin').className = 'aviso';
+  document.getElementById('avisoAdminLogin').textContent = '';
+}
+
+function cerrarAdminModal(){
+  document.getElementById('modalAdmin').classList.remove('abierto');
+}
+
+function verificarClaveAdmin(){
+  const clave = document.getElementById('adminPasswordInput').value;
+  const aviso = document.getElementById('avisoAdminLogin');
+  if(clave === CLAVE_ADMIN_CORRECTA){
+    document.getElementById('adminPasoLogin').style.display = 'none';
+    document.getElementById('adminPasoPanel').style.display = 'block';
+    
+    // Cargar valores actuales
+    document.getElementById('inputSheetEmbedUrl').value = localStorage.getItem(KEY_SHEET_EMBED) || '';
+    document.getElementById('inputSheetApiUrl').value = localStorage.getItem(KEY_SHEET_API) || '';
+    renderizarTablaAdmin();
+  } else {
+    aviso.className = 'aviso error';
+    aviso.textContent = 'Contraseña incorrecta. Inténtalo de nuevo.';
+  }
+}
+
+function guardarConfiguracionSheet(){
+  const embedUrl = document.getElementById('inputSheetEmbedUrl').value.trim();
+  const apiUrl = document.getElementById('inputSheetApiUrl').value.trim();
+  localStorage.setItem(KEY_SHEET_EMBED, embedUrl);
+  localStorage.setItem(KEY_SHEET_API, apiUrl);
+  actualizarVistaHoja();
+  alert('¡Configuración guardada correctamente!');
+}
+
+function actualizarVistaHoja(){
+  const embedUrl = localStorage.getItem(KEY_SHEET_EMBED);
+  const iframe = document.getElementById('iframeGoogleSheet');
+  const msg = document.getElementById('mensajeSinHoja');
+  if(embedUrl && iframe && msg){
+    iframe.src = embedUrl;
+    iframe.style.display = 'block';
+    msg.style.display = 'none';
+  } else if(iframe && msg) {
+    iframe.style.display = 'none';
+    msg.style.display = 'block';
+  }
+}
+
+/* ============ REGISTROS DE DATOS ============ */
+function obtenerRegistrosGuardados(){
+  try { return JSON.parse(localStorage.getItem(KEY_REGISTROS_DATA) || '[]'); }
+  catch(e){ return []; }
+}
+
+function guardarRegistroLocal(datos){
+  const lista = obtenerRegistrosGuardados();
+  lista.unshift(datos);
+  localStorage.setItem(KEY_REGISTROS_DATA, JSON.stringify(lista));
+}
+
+function renderizarTablaAdmin(){
+  const lista = obtenerRegistrosGuardados();
+  const tbody = document.getElementById('tbodyRegistrosAdmin');
+  document.getElementById('totalRegistrosContador').textContent = lista.length;
+  if(!tbody) return;
+  if(lista.length === 0){
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#6b7280;">No hay envíos registrados todavía.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = lista.map(r => `
+    <tr>
+      <td>${r.creado ? new Date(r.creado).toLocaleDateString() + ' ' + new Date(r.creado).toLocaleTimeString() : ''}</td>
+      <td>${r.nombre || ''}</td>
+      <td>${r.correo || ''}</td>
+      <td>${r.telefono || ''}</td>
+      <td>${r.nacimiento || ''}</td>
+      <td>${r.direccion || ''}</td>
+      <td>${r.ciudad || ''}</td>
+      <td>${Array.isArray(r.interes) ? r.interes.join(', ') : (r.interes || '')}</td>
+      <td>${r.contacto || ''}</td>
+      <td>${r.comentario || ''}</td>
+    </tr>
+  `).join('');
+}
+
+function copiarDatosParaSheet(){
+  const lista = obtenerRegistrosGuardados();
+  if(lista.length === 0){
+    alert('No hay datos para copiar.');
+    return;
+  }
+  // Formato Tabulado (TSV) compatible para pegar directo en Google Sheet / Excel
+  let texto = "Fecha\tNombre\tCorreo\tTeléfono\tF. Nacimiento\tDirección\tCiudad\tIntereses\tContacto\tComentario\n";
+  lista.forEach(r => {
+    const f = r.creado ? new Date(r.creado).toLocaleString() : '';
+    const intereses = Array.isArray(r.interes) ? r.interes.join(', ') : (r.interes || '');
+    texto += `${f}\t${r.nombre || ''}\t${r.correo || ''}\t${r.telefono || ''}\t${r.nacimiento || ''}\t${r.direccion || ''}\t${r.ciudad || ''}\t${intereses}\t${r.contacto || ''}\t${r.comentario || ''}\n`;
+  });
+  navigator.clipboard.writeText(texto).then(() => {
+    alert('¡Datos copiados! Ahora abre tu Google Sheet, haz clic en la primera celda vacía y presiona Ctrl + V para pegarlos todos.');
+  }).catch(() => {
+    alert('No se pudo copiar automáticamente. Puedes seleccionar la tabla manualmente.');
+  });
+}
+
+function borrarDatosRegistrados(){
+  if(confirm('¿Estás seguro de vaciar el historial de registros guardados?')){
+    localStorage.removeItem(KEY_REGISTROS_DATA);
+    renderizarTablaAdmin();
+  }
 }
 
 /* ============ Materias de muestra ============ */
@@ -431,13 +624,14 @@ function cargarMaterias(){
   `).join('');
 }
 cargarMaterias();
+actualizarVistaHoja();
 
 function abrirModalMateria(nombre){
   document.getElementById('modalMateriaTitulo').textContent = nombre;
   const lista = document.getElementById('modalMateriaLista');
   lista.innerHTML = `
-    <li><a href="#" onclick="alert('Descargando guía básica de ${nombre}');return false;">📚 Guía Oficial y Bibliografía</a></li>
-    <li><a href="#" onclick="alert('Generando cuestionario...');return false;">⚙️ Cuestionario Automático</a></li>
+    <li><a href="#" onclick="alert('Descargando guía de ${nombre}');return false;">📚 Material & Apuntes</a></li>
+    <li><a href="#" onclick="alert('Iniciando cuestionario de ${nombre}');return false;">⚙️ Cuestionario Automático</a></li>
   `;
   document.getElementById('modalMateria').classList.add('abierto');
 }
@@ -447,9 +641,6 @@ function cerrarModalMateria(){
 }
 
 /* ============ Cuentas y sesión (guardadas en el navegador) ============ */
-const CLAVE_USUARIOS = 'ecopass_usuarios';
-const CLAVE_SESION = 'ecopass_sesion';
-
 function leerUsuarios(){
   try{ return JSON.parse(localStorage.getItem(CLAVE_USUARIOS) || '{}'); }
   catch(e){ return {}; }
@@ -480,7 +671,6 @@ function limpiarAvisos(){
   });
 }
 
-/* ============ Pestañas: iniciar sesión / registrarme ============ */
 function cambiarTab(cual, desdePortada){
   const esLogin = cual === 'login';
   document.getElementById('panelLogin').hidden = !esLogin;
@@ -494,7 +684,6 @@ function cambiarTab(cual, desdePortada){
   }
 }
 
-/* ============ Entrar al sitio y saltar directo a las materias ============ */
 function entrarAlSitio(nombre){
   document.getElementById('puertaIngreso').style.display = 'none';
   document.getElementById('sitio').style.display = 'block';
@@ -527,19 +716,19 @@ async function iniciarSesion(evento){
   let usuarios;
   try{ usuarios = leerUsuarios(); }
   catch(e){
-    mostrarAviso('avisoLogin','error','Tu navegador bloquea el almacenamiento local. Activa las cookies y el almacenamiento del sitio e inténtalo de nuevo.');
+    mostrarAviso('avisoLogin','error','El navegador bloquea el almacenamiento.');
     return;
   }
 
   const usuario = usuarios[correo];
   if(!usuario){
-    mostrarAviso('avisoLogin','error','No encontramos una cuenta con ese correo. Usa "Regístrate ahora" para crearla.');
+    mostrarAviso('avisoLogin','error','No encontramos esa cuenta. Regístrate.');
     return;
   }
 
   const hash = await hashClave(clave, correo);
   if(hash !== usuario.hash){
-    mostrarAviso('avisoLogin','error','La contraseña es incorrecta. Revísala e inténtalo otra vez.');
+    mostrarAviso('avisoLogin','error','La contraseña es incorrecta.');
     return;
   }
 
@@ -547,7 +736,7 @@ async function iniciarSesion(evento){
   entrarAlSitio(usuario.nombre);
 }
 
-/* ============ Registro con sincronización a Google Sheets ============ */
+/* ============ Registro ============ */
 async function enviarFormulario(evento){
   evento.preventDefault();
   limpiarAvisos();
@@ -564,7 +753,7 @@ async function enviarFormulario(evento){
   catch(e){ usuarios = {}; }
 
   if(usuarios[correo]){
-    mostrarAviso('avisoRegistro','error','Ya existe una cuenta con ese correo. Ve a "Iniciar sesión" para entrar.');
+    mostrarAviso('avisoRegistro','error','Ya existe una cuenta con ese correo.');
     return;
   }
 
@@ -587,26 +776,29 @@ async function enviarFormulario(evento){
     guardarUsuarios(usuarios);
     localStorage.setItem(CLAVE_SESION, correo);
   }catch(e){
-    mostrarAviso('avisoRegistro','error','No pudimos guardar tu cuenta localmente.');
+    mostrarAviso('avisoRegistro','error','Error al guardar en el navegador.');
     return;
   }
 
-  // Enviar a Google Sheets mediante Apps Script si está configurada la URL
-  if(GOOGLE_SHEET_URL && !GOOGLE_SHEET_URL.includes('TU_URL_DE_GOOGLE_APPS_SCRIPT')){
-    const datosParaSheet = {...datos, hash: undefined};
-    fetch(GOOGLE_SHEET_URL, {
+  // 1. Guardar copia en el panel de administrador
+  guardarRegistroLocal({...datos, hash: undefined});
+
+  // 2. Si configuraste Apps Script en el panel, se envía automáticamente
+  const apiUrl = localStorage.getItem(KEY_SHEET_API);
+  if(apiUrl && apiUrl.startsWith('http')){
+    fetch(apiUrl, {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(datosParaSheet)
-    }).catch(err => console.error('Error enviando a Google Sheets:', err));
+      body: JSON.stringify({...datos, hash: undefined})
+    }).catch(err => console.log('Envío a webhook omitido:', err));
   }
 
   form.reset();
   entrarAlSitio(datos.nombre);
 }
 
-/* ============ Si ya había una sesión iniciada, entra directo a las materias ============ */
+/* ============ Restaurar sesión ============ */
 (function restaurarSesion(){
   try{
     const correo = localStorage.getItem(CLAVE_SESION);
@@ -638,7 +830,6 @@ function fileALinea64(file){
 async function procesarImagen(evento){
   const archivo = evento.target.files[0];
   if(!archivo) return;
-
   abrirModal();
   const preview = document.getElementById('previewImagen');
   const cargando = document.getElementById('cargandoIA');
@@ -662,22 +853,19 @@ async function procesarImagen(evento){
           role: 'user',
           content: [
             { type: 'image', source: { type: 'base64', media_type: archivo.type, data: base64 } },
-            { type: 'text', text: 'Sos un tutor de Economía para estudiantes universitarios. Mirá la imagen y desarrollá la resolución paso a paso en español.' }
+            { type: 'text', text: 'Tutor de economía UAGRM: resuelve paso a paso el ejercicio.' }
           ]
         }]
       })
     });
-
-    if(!respuesta.ok) throw new Error('Error al procesar la imagen.');
-
+    if(!respuesta.ok) throw new Error('Error al procesar.');
     const datos = await respuesta.json();
     const texto = (datos.content || []).map(b => b.type === 'text' ? b.text : '').filter(Boolean).join('\n');
-
     cargando.style.display = 'none';
     resultadoDiv.innerHTML = '<div class="resultado-ia">' + (texto || 'Sin respuesta.').replace(/</g,'&lt;') + '</div>';
   }catch(error){
     cargando.style.display = 'none';
-    resultadoDiv.innerHTML = '<div class="error-ia">Error al analizar la imagen: ' + error.message + '</div>';
+    resultadoDiv.innerHTML = '<div class="error-ia">Error al analizar imagen.</div>';
   }
 }
 </script>
